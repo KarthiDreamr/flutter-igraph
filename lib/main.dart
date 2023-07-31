@@ -9,13 +9,9 @@ final Map<String, Map<String, int>> hjson = {
     'BH2': 100,
     'BH3': 75,
     'BH4': 100,
+    'BH5': 10,
   },
-  "total_count": {
-    'BH1': 100,
-    'BH2': 200,
-    'BH3': 100,
-    'BH4': 100,
-  }
+  "total_count": {'BH1': 100, 'BH2': 200, 'BH3': 100, 'BH4': 100, "BH5": 100}
 };
 
 void main() {
@@ -51,8 +47,8 @@ class _HostelGraphState extends State<HostelGraph> {
   void initState() {
     super.initState();
 
-    inMap = hjson[jsonKey[0]] ?? errorPrint();
-    totMap = hjson[jsonKey[1]] ?? errorPrint();
+    inMap = hjson[jsonKey[0]] ?? errorPrintMap();
+    totMap = hjson[jsonKey[1]] ?? errorPrintMap();
 
     inKey = hjson[jsonKey[0]]!.keys.toList();
     totKey = hjson[jsonKey[1]]!.keys.toList();
@@ -62,8 +58,12 @@ class _HostelGraphState extends State<HostelGraph> {
   List<Map<String, dynamic>> hlist2 = [];
   List<String> jsonKey = hjson.keys.toList();
 
-  Map<String, int> errorPrint() {
-    throw "Null value Returned When accessing Map";
+  Map<String, int> errorPrintMap() {
+    throw "Null value Returned When accessing Map!";
+  }
+
+  int errorPrintInt() {
+    throw "Null value Returned When accessing Integer!";
   }
 
   List<Map<String, dynamic>> presentCreate() {
@@ -79,7 +79,7 @@ class _HostelGraphState extends State<HostelGraph> {
   List<Map<String, dynamic>> absentCreate() {
     for (int i = 0; i < inKey.length; i++) {
       double percentage =
-          100 - (inMap[inKey[i]] ?? 1) / (totMap[totKey[i]] ?? -1) * 100;
+          100 - (inMap[inKey[i]] ?? errorPrintInt()) / (totMap[totKey[i]] ?? -errorPrintInt()) * 100;
       // double precentage = try(inMap[inKey[i]] / totMap[totKey[i]] ?? -1) * 100)
       hlist2.add({'domain': inKey[i], 'measure': percentage});
     }
@@ -107,8 +107,9 @@ class _HostelGraphState extends State<HostelGraph> {
           ],
           barValue: (barData, index) {
             if (index != null) {
-              int residentCount = (barData["measure"] * (totMap[totKey[index]]! / 100)).toInt();
-              
+              int residentCount =
+                  (barData["measure"] * (totMap[totKey[index]]! / 100)).toInt();
+
               return residentCount.toString();
             } else {
               return "Error Occoured";
