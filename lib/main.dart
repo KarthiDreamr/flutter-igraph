@@ -3,17 +3,6 @@ import 'package:d_chart/d_chart.dart';
 
 // https://pub.dev/packages/d_chart#bar-example
 
-final Map<String, Map<String, int>> hjson = {
-  "in_count": {
-    'BH1': 25,
-    'BH2': 100,
-    'BH3': 75,
-    'BH4': 100,
-    'BH5': 10,
-  },
-  "total_count": {'BH1': 100, 'BH2': 200, 'BH3': 100, 'BH4': 100, "BH5": 100}
-};
-
 void main() {
   runApp(const MyApp());
 }
@@ -42,21 +31,39 @@ class _HostelGraphState extends State<HostelGraph> {
 
   late List<String> inKey;
   late List<String> totKey;
+  late Map<String, Map<String, int>> hjson;
+  late List<String> jsonKey;
 
   @override
   void initState() {
     super.initState();
 
+    hjson = {
+      "in_count": {
+        'BH1': 25,
+        'BH2': 100,
+        'BH3': 75,
+        'BH4': 100,
+        'BH5': 10,
+      },
+      "total_count": {
+        'BH1': 100,
+        'BH2': 200,
+        'BH3': 100,
+        'BH4': 100,
+        "BH5": 100
+      }
+    };
+
+    jsonKey = hjson.keys.toList();
     inMap = hjson[jsonKey[0]] ?? errorPrintMap();
     totMap = hjson[jsonKey[1]] ?? errorPrintMap();
 
     inKey = hjson[jsonKey[0]]!.keys.toList();
     totKey = hjson[jsonKey[1]]!.keys.toList();
+
   }
 
-  List<Map<String, dynamic>> hlist1 = [];
-  List<Map<String, dynamic>> hlist2 = [];
-  List<String> jsonKey = hjson.keys.toList();
 
   Map<String, int> errorPrintMap() {
     throw "Null value Returned When accessing Map!";
@@ -67,9 +74,12 @@ class _HostelGraphState extends State<HostelGraph> {
   }
 
   List<Map<String, dynamic>> presentCreate() {
+
+    List<Map<String, dynamic>> hlist1 = [];
+
     for (int i = 0; i < inKey.length; i++) {
       double percentage =
-          (inMap[inKey[i]] ?? 1) / (totMap[totKey[i]] ?? -1) * 100;
+          (inMap[inKey[i]] ??  errorPrintInt()) / (totMap[totKey[i]] ??  errorPrintInt()) * 100;
       hlist1.add({'domain': inKey[i], 'measure': percentage});
     }
 
@@ -77,9 +87,15 @@ class _HostelGraphState extends State<HostelGraph> {
   }
 
   List<Map<String, dynamic>> absentCreate() {
+
+    List<Map<String, dynamic>> hlist2 = [];
+
     for (int i = 0; i < inKey.length; i++) {
-      double percentage =
-          100 - (inMap[inKey[i]] ?? errorPrintInt()) / (totMap[totKey[i]] ?? -errorPrintInt()) * 100;
+
+      double percentage = 100 -
+          (inMap[inKey[i]] ?? errorPrintInt()) /
+              (totMap[totKey[i]] ?? -errorPrintInt()) *
+              100;
       // double precentage = try(inMap[inKey[i]] / totMap[totKey[i]] ?? -1) * 100)
       hlist2.add({'domain': inKey[i], 'measure': percentage});
     }
@@ -126,9 +142,11 @@ class _HostelGraphState extends State<HostelGraph> {
           verticalDirection: false,
           xAxisTitle: "Attendance",
           yAxisTitle: "Hostel Name",
+
           // measureLabelPaddingToAxisLine: 8,
         ),
       ),
     );
   }
 }
+
